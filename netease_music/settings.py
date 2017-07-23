@@ -11,6 +11,8 @@
 
 BOT_NAME = 'netease_music'
 
+LOG_LEVEL = 'DEBUG'
+
 SPIDER_MODULES = ['netease_music.spiders']
 NEWSPIDER_MODULE = 'netease_music.spiders'
 
@@ -19,7 +21,7 @@ NEWSPIDER_MODULE = 'netease_music.spiders'
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32

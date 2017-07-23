@@ -1,5 +1,4 @@
 import scrapy
-import re
 import pymongo
 
 
@@ -9,7 +8,6 @@ class SingerIdSpider(scrapy.Spider):
         'ITEM_PIPELINES': {'netease_music.pipelines.SingerIdPipeline': 300},
         'MONGO_URI': 'localhost:27017',
         'MONGO_DATABASE': 'smart_tv',
-        'COLLECTION_NAME': 'singers',
         'DOWNLOAD_DELAY': 0
     }
 
@@ -17,8 +15,21 @@ class SingerIdSpider(scrapy.Spider):
         self.singer_num = 0
         self.client = pymongo.MongoClient(self.settings.get('MONGO_URI'))
         self.db = self.client[self.settings.get('MONGO_DATABASE')]
-        self.collection = self.db[self.settings.get('COLLECTION_NAME')]
         yield scrapy.Request('http://music.163.com/discover/artist/cat?id=1001&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=1002&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=1003&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=2001&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=2002&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=2003&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=6001&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=6002&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=6003&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=7001&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=7002&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=7003&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=4001&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=4002&initial=0', self.parse)
+        yield scrapy.Request('http://music.163.com/discover/artist/cat?id=4003&initial=0', self.parse)
 
     def parse(self, response):
         for href in response.css('#initial-selector li a::attr(href)'):
