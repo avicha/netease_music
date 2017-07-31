@@ -13,6 +13,7 @@ mappings = {
         'properties': {
             'name': {'type': 'text'},
             'alias': {'type': 'text'},
+            'description': {'type': 'text'},
             'updated_at': {'type': 'date'}
         }
     },
@@ -20,8 +21,8 @@ mappings = {
         'properties': {
             'name': {'type': 'text'},
             'alias': {'type': 'text'},
+            'description': {'type': 'text'},
             'singer_name': {'type': 'text'},
-            'publish_time': {'type': 'date', 'format': 'yyyy-MM-dd'},
             'updated_at': {'type': 'date'}
         }
     },
@@ -33,7 +34,6 @@ mappings = {
             'singer_name': {'type': 'text'},
             'artists': {'type': 'text'},
             'lyric': {'type': 'text'},
-            'duration': {'type': 'integer'},
             'updated_at': {'type': 'date'}
         }
     }
@@ -47,12 +47,12 @@ db = client.smart_tv
 q = db.singers.find({})
 for x in q:
     print 'singer: %s' % x.get('_id')
-    es.index(index, doc_type='singers', id=x.get('_id'), body={'name': x.get('name'), 'alias': x.get('alias'), 'updated_at': x.get('updated_at')})
+    es.index(index, doc_type='singers', id=x.get('_id'), body={'name': x.get('name'), 'alias': x.get('alias'), 'description': x.get('description'), 'updated_at': x.get('updated_at')})
 
 q = db.albums.find({})
 for x in q:
     print 'album: %s' % x.get('_id')
-    es.index(index, doc_type='albums', id=x.get('_id'), body={'name': x.get('name'), 'alias': x.get('alias'), 'singer_name': x.get('singer_name'), 'publish_time': x.get('publish_time'), 'updated_at': x.get('updated_at')})
+    es.index(index, doc_type='albums', id=x.get('_id'), body={'name': x.get('name'), 'alias': x.get('alias'), 'description': x.get('description'), 'singer_name': x.get('singer_name'), 'updated_at': x.get('updated_at')})
 
 # q = db.songs.find({}).limit(0)
 # for x in q:
@@ -63,4 +63,4 @@ for x in q:
 #         for alias_name in artist.get('alia'):
 #             if alias_name != name:
 #                 artists.append(alias_name)
-#     es.index(index, doc_type='songs', id=x.get('_id'), body={'name': x.get('name'), 'alias': ','.join(x.get('alias')), 'album_name': x.get('album_name'), 'singer_name': x.get('singer_name'), 'artists': artists, 'lyric': x.get('lyric'), 'duration': x.get('duration'), 'updated_at': x.get('updated_at')})
+#     es.index(index, doc_type='songs', id=x.get('_id'), body={'name': x.get('name'), 'alias': ','.join(x.get('alias')), 'album_name': x.get('album_name'), 'singer_name': x.get('singer_name'), 'artists': artists, 'lyric': x.get('lyric'), 'updated_at': x.get('updated_at')})
