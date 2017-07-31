@@ -46,11 +46,13 @@ client = pymongo.MongoClient('localhost:27017')
 db = client.smart_tv
 q = db.singers.find({})
 for x in q:
+    print 'singer: %s' % x.get('_id')
     es.index(index, doc_type='singers', id=x.get('_id'), body={'name': x.get('name'), 'alias': x.get('alias'), 'updated_at': x.get('updated_at')})
 
 q = db.albums.find({})
 for x in q:
-    es.index(index, doc_type='albums', id=x.get('_id'), body={'name': x.get('name'), 'alias': x.get('alias'), 'singer_name': x.get('singer_name'), 'publish_time': x.get('publish_time', '0000-00-00'), 'updated_at': x.get('updated_at')})
+    print 'album: %s' % x.get('_id')
+    es.index(index, doc_type='albums', id=x.get('_id'), body={'name': x.get('name'), 'alias': x.get('alias'), 'singer_name': x.get('singer_name'), 'publish_time': x.get('publish_time'), 'updated_at': x.get('updated_at')})
 
 # q = db.songs.find({}).limit(0)
 # for x in q:
