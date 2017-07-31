@@ -20,6 +20,8 @@ class AlbumPipeline(object):
             if not song:
                 song_data.update({'created_at': datetime.datetime.now(), 'updated_at': datetime.datetime.now(), 'deleted_at': None, 'status': 1})
                 spider.db.songs.insert_one(song_data)
+            else:
+                spider.db.songs.update_one({'remote_id': song_data.get('remote_id'), 'source': song_data.get('source')}, {'$set': song_data})
         return item
 
 
