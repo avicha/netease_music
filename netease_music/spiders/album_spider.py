@@ -20,7 +20,7 @@ class AlbumSpider(scrapy.Spider):
         self.song_num = 0
         self.client = client
         self.db = db
-        q = self.db.albums.find({'status': 1, 'source': 1}).limit(self.limit)
+        q = self.db.albums.find({'status': 1, 'source': 1}, no_cursor_timeout=True).limit(self.limit)
         for x in q:
             yield scrapy.Request('http://music.163.com/album?id=%s' % x.get('remote_id'), self.parse, meta={'album_id': x.get('remote_id'), 'remote_singer_id': x.get('remote_singer_id'), 'singer_name': x.get('singer_name')})
 

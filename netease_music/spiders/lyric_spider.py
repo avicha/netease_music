@@ -19,7 +19,7 @@ class LyricSpider(scrapy.Spider):
         self.lyric_num = 0
         self.client = client
         self.db = db
-        q = self.db.songs.find({'status': 1, 'source': 1}).limit(self.limit)
+        q = self.db.songs.find({'status': 1, 'source': 1}, no_cursor_timeout=True).limit(self.limit)
         for x in q:
             yield scrapy.Request('http://music.163.com/api/song/media?id=%s' % x.get('remote_id'), self.parse, meta={'song_id': x.get('remote_id')})
 

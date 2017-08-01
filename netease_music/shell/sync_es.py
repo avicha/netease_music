@@ -42,7 +42,7 @@ if es.indices.exists(index):
     es.indices.delete(index)
 resp = es.indices.create(index, body={'settings': settings, 'mappings': mappings}, update_all_types=True, wait_for_active_shards=1)
 print repr(resp)
-client = pymongo.MongoClient('localhost:27017')
+client = pymongo.MongoClient(host='localhost', port=27017, tz_aware=True, connect=True)
 db = client.smart_tv
 q = db.singers.find({'status': 3})
 for x in q:
@@ -54,7 +54,7 @@ for x in q:
     print 'album: %s' % x.get('_id')
     es.index(index, doc_type='albums', id=x.get('_id'), body={'name': x.get('name'), 'alias': x.get('alias'), 'description': x.get('description'), 'singer_name': x.get('singer_name'), 'updated_at': x.get('updated_at')})
 
-q = db.songs.find({})
+q = db.songs.find({}, no_cursor_timeout=True)
 for x in q:
     print 'song: %s' % x.get('_id')
     artists = []
