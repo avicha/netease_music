@@ -1,5 +1,5 @@
 import scrapy
-import pymongo
+from store import client, db
 import datetime
 
 
@@ -7,18 +7,19 @@ class AlbumIdSpider(scrapy.Spider):
     name = 'album_id'
     custom_settings = {
         'ITEM_PIPELINES': {'netease_music.pipelines.AlbumIdPipeline': 300},
-        'MONGO_URI': 'localhost:27017',
-        'MONGO_DATABASE': 'smart_tv',
         'DOWNLOAD_DELAY': 0,
-        'PAGE_SIZE': 1000,
-        'LIMIT': 10000
+        'PAGE_SIZE': 1000
     }
+
+    def __init__(self, limit=10000, *args, **kwargs):
+        super(AlbumIdSpider, self).__init__(*args, **kwargs)
+        self.limit = int(limit)
 
     def start_requests(self):
         self.album_num = 0
-        self.client = pymongo.MongoClient(self.settings.get('MONGO_URI'))
-        self.db = self.client[self.settings.get('MONGO_DATABASE')]
-        q = self.db.singers.find({'status': 2, 'source': 1}).limit(self.settings.get('LIMIT'))
+        self.client = client
+        self.db = db
+        q = self.db.singers.find({'status': 2, 'source': 1}).limit(self.limit)
         for x in q:
             singer_id = x.get('remote_id')
             yield scrapy.Request('http://music.163.com/artist/album?id=%s&limit=%s&offset=0' % (singer_id, self.settings.get('PAGE_SIZE')), self.parse, meta={'remote_singer_id': singer_id, 'singer_name': x.get('name')})

@@ -1,20 +1,18 @@
 import scrapy
-import pymongo
+from store import client, db
 
 
 class SingerIdSpider(scrapy.Spider):
     name = 'singer_id'
     custom_settings = {
         'ITEM_PIPELINES': {'netease_music.pipelines.SingerIdPipeline': 300},
-        'MONGO_URI': 'localhost:27017',
-        'MONGO_DATABASE': 'smart_tv',
         'DOWNLOAD_DELAY': 0
     }
 
     def start_requests(self):
         self.singer_num = 0
-        self.client = pymongo.MongoClient(self.settings.get('MONGO_URI'))
-        self.db = self.client[self.settings.get('MONGO_DATABASE')]
+        self.client = client
+        self.db = db
         yield scrapy.Request('http://music.163.com/discover/artist/cat?id=1001&initial=0', self.parse)
         yield scrapy.Request('http://music.163.com/discover/artist/cat?id=1002&initial=0', self.parse)
         yield scrapy.Request('http://music.163.com/discover/artist/cat?id=1003&initial=0', self.parse)

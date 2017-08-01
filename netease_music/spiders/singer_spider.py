@@ -1,5 +1,5 @@
 import scrapy
-import pymongo
+from store import client, db
 import datetime
 from bs4 import BeautifulSoup
 
@@ -8,18 +8,18 @@ class SingerSpider(scrapy.Spider):
     name = 'singer'
     custom_settings = {
         'ITEM_PIPELINES': {'netease_music.pipelines.SingerPipeline': 300},
-        'MONGO_URI': 'localhost:27017',
-        'MONGO_DATABASE': 'smart_tv',
-        'DOWNLOAD_DELAY': 0,
-        'LIMIT': 10000
+        'DOWNLOAD_DELAY': 0
     }
+
+    def __init__(self, limit=10000, *args, **kwargs):
+        super(SingerSpider, self).__init__(*args, **kwargs)
+        self.limit = int(limit)
 
     def start_requests(self):
         self.singer_num = 0
-        self.client = pymongo.MongoClient(self.settings.get('MONGO_URI'))
-        self.db = self.client[self.settings.get('MONGO_DATABASE')]
-        week = datetime.timedelta(days=7)
-        q = self.db.singers.find({'name': None}).limit(self.settings.get('LIMIT'))
+        self.client = client
+        self.db = db
+        q = self.db.singers.find({'status': 1, 'source': 1}).limit(self.limit)
         for x in q:
             self.singer_num += 1
             yield scrapy.Request('http://music.163.com/artist/desc?id=%s' % x.get('remote_id'), self.parse, meta={'singer_id': x.get('remote_id')})

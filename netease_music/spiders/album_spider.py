@@ -1,6 +1,6 @@
 # coding=utf-8
 import scrapy
-import pymongo
+from store import client, db
 import datetime
 from bs4 import BeautifulSoup
 
@@ -9,17 +9,18 @@ class AlbumSpider(scrapy.Spider):
     name = 'album'
     custom_settings = {
         'ITEM_PIPELINES': {'netease_music.pipelines.AlbumPipeline': 300},
-        'MONGO_URI': 'localhost:27017',
-        'MONGO_DATABASE': 'smart_tv',
-        'DOWNLOAD_DELAY': 0,
-        'LIMIT': 10000
+        'DOWNLOAD_DELAY': 0
     }
+
+    def __init__(self, limit=10000, *args, **kwargs):
+        super(AlbumSpider, self).__init__(*args, **kwargs)
+        self.limit = int(limit)
 
     def start_requests(self):
         self.song_num = 0
-        self.client = pymongo.MongoClient(self.settings.get('MONGO_URI'))
-        self.db = self.client[self.settings.get('MONGO_DATABASE')]
-        q = self.db.albums.find({'status': 1, 'source': 1}).limit(self.settings.get('LIMIT'))
+        self.client = client
+        self.db = db
+        q = self.db.albums.find({'status': 1, 'source': 1}).limit(self.limit)
         for x in q:
             yield scrapy.Request('http://music.163.com/album?id=%s' % x.get('remote_id'), self.parse, meta={'album_id': x.get('remote_id'), 'remote_singer_id': x.get('remote_singer_id'), 'singer_name': x.get('singer_name')})
 

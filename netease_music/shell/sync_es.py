@@ -44,23 +44,26 @@ resp = es.indices.create(index, body={'settings': settings, 'mappings': mappings
 print repr(resp)
 client = pymongo.MongoClient('localhost:27017')
 db = client.smart_tv
-q = db.singers.find({})
+q = db.singers.find({'status': 3})
 for x in q:
     print 'singer: %s' % x.get('_id')
     es.index(index, doc_type='singers', id=x.get('_id'), body={'name': x.get('name'), 'alias': x.get('alias'), 'description': x.get('description'), 'updated_at': x.get('updated_at')})
 
-q = db.albums.find({})
+q = db.albums.find({'status': 2})
 for x in q:
     print 'album: %s' % x.get('_id')
     es.index(index, doc_type='albums', id=x.get('_id'), body={'name': x.get('name'), 'alias': x.get('alias'), 'description': x.get('description'), 'singer_name': x.get('singer_name'), 'updated_at': x.get('updated_at')})
 
-# q = db.songs.find({}).limit(0)
-# for x in q:
-#     artists = []
-#     for artist in x.get('artists'):
-#         name = artist.get('name')
-#         artists.append(name)
-#         for alias_name in artist.get('alia'):
-#             if alias_name != name:
-#                 artists.append(alias_name)
-#     es.index(index, doc_type='songs', id=x.get('_id'), body={'name': x.get('name'), 'alias': ','.join(x.get('alias')), 'album_name': x.get('album_name'), 'singer_name': x.get('singer_name'), 'artists': artists, 'lyric': x.get('lyric'), 'updated_at': x.get('updated_at')})
+q = db.songs.find({})
+for x in q:
+    print 'song: %s' % x.get('_id')
+    artists = []
+    for artist in x.get('artists'):
+        name = artist.get('name')
+        artists.append(name)
+        alia = artist.get('alia')
+        if alia and len(alia):
+            for alias_name in alia:
+                if alias_name != name:
+                    artists.append(alias_name)
+    es.index(index, doc_type='songs', id=x.get('_id'), body={'name': x.get('name'), 'alias': ','.join(x.get('alias')), 'album_name': x.get('album_name'), 'singer_name': x.get('singer_name'), 'artists': artists, 'lyric': x.get('lyric'), 'updated_at': x.get('updated_at')})
